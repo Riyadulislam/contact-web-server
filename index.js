@@ -10,26 +10,13 @@ const app =express();
 app.use(cors());
 app.use(express.json());
 
-
-
-
-
-// const serviceSID="VA0782653a0b20bda48c72a7b897e41efa"
-// const accountSid="ACd723bbc93ecee790332624edee549977"
-// const authToken= "6af2ddc92a5bff2e03d4885e293db033"
-// const clients = require('twilio')(accountSid, authToken)
-
-
-// function generateOTP() {
-//     return Math.floor(100000 + Math.random() * 900000);
-//   }
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.1pxon9n.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run(){
     try{
         const contactOptionCollection=client.db('contactManager').collection('contact')
+         const userNumberDateCollection=client.db('contactManager').collection('information')
         app.get('/contactList',async(req,res)=>{
             const query={};
             const options= await contactOptionCollection.find(query).toArray();
@@ -44,6 +31,11 @@ async function run(){
             res.send(result)
           
         })
+        app.get('/dateinfo',async(req,res)=>{
+            const query={};
+            const dateInfo= await userNumberDateCollection.find(query).toArray();
+            res.send(dateInfo)
+        })
         app.post('/contactAdd',async(req,res)=>{
             const contact=req.body;
            
@@ -53,27 +45,10 @@ async function run(){
         });
         
         app.post('/mobile',async(req,res)=>{
-            const {phone}=req.body;
-            console.log('p',phone) 
-            // const OTP = generateOTP();
-            // clients.messages.create({
-            //     body: `Your OTP is: ${OTP}`,
-            //     from: '+17193987273',
-            //     to: {to:"+88"+ phone, channel: 'sms'}
-            //   })
-            //   .then((message) => console.log(message.sid));
-         
-            // clients.verify.v2.services(serviceSID)
-            // .verifications
-            // .create({to:"+1"+ phone, channel: 'sms'})
-            //  .then(verification =>{
-            //     console.log('kopppppp',verification.status)
-            //     res.status(200).send({ verification})
-            //     .catch((error)=>{
-            //         console.log(error)
-            //      res.status(400).send({ error});
-            //     })
-            //  });
+            const info=req.body;
+         console.log(info)
+         const result=await userNumberDateCollection.insertOne(info)
+         res.send(result)
         })
     }
     finally{
