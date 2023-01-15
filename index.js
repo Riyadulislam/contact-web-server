@@ -24,17 +24,15 @@ async function run(){
         })
         app.get('/contactList/:id',async(req,res)=>{
             const id=req.params.id
-           
             const query={_id:ObjectId(id)}
-         
             const result =await contactOptionCollection.findOne(query)
             res.send(result)
-          
         })
         app.get('/dateinfo',async(req,res)=>{
             const query={};
-            const dateInfo= await userNumberDateCollection.find(query).toArray();
-            res.send(dateInfo)
+            const dateInfo= await userNumberDateCollection.find(query).sort().toArray();
+            const givenArray=dateInfo.sort().reverse();
+            res.send(givenArray)
         })
         app.post('/contactAdd',async(req,res)=>{
             const contact=req.body;
